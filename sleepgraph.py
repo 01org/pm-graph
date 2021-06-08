@@ -3366,8 +3366,21 @@ def parseTraceLog(live=False):
 					val = ps.split()
 					if not val:
 						continue
-					name = val[0].replace('--', '-')
-					proclist[name] = int(val[1])
+					if not len(val) < 2:
+						name = val[0].replace('--', '-')
+						proclist[name] = int(val[1])
+					else:
+						proclist = dict()
+						nextline = next(tf)
+						mcont = re.match(tp.ftrace_line_fmt, nextline)
+						n = m.group('ps') + mcont.group('msg').split(': ')[1]
+						for pscont in n.split(','):
+							val = pscont.split()
+							if not val:
+								continue
+							if not len(val) < 2:
+								name = val[0].replace('--', '-')
+								proclist[name] = int(val[1])
 				data.pstl[t.time] = proclist
 				continue
 		# find the end of resume
